@@ -1,48 +1,34 @@
-# Taking input from user
-unit = int(input('Time Unit: '))
-earnings = int(input('Earnings: $'))
+# Input
+unit = int(input("Time Unit:"))
 
-# Default time unit for establishment
-di_units = {
-    't': 5,
-    'p': 4,
-    'c': 10,
-}
+# Default values
+di_units = {'T': 5, 'P': 4, 'C': 10}
+di_solutions = {'T': 0, 'P': 0, 'C': 0}
+di_earnings = {'T': 1500, 'P': 1000, 'C': 3000}
 
-# Dictionary to store number of establishment which can be constructed
-di_solutions = {
-    't': 0,
-    'p': 0,
-    'c': 0,
-}
+# Recursive method to find number of possible construction building along with their earnings
+def maxProfit(unit,  index, i, con_sol, earning=0):
+    if unit < di_units[i]:
+        return [con_sol, earning]
+    con_sol[index] += 1
+    unit -= di_units[i]
+    earning += unit * di_earnings[i]
+    return maxProfit(unit, index, i, con_sol, earning)
 
-# Default earnings from respective establishment
-te, pe, ce = 1500, 1000, 3000
-
-# An array to store possible solutions
-possible_solutions = []
-
-# Finding possible solutions based on units and earnings given by user
-if earnings % te == 0 and unit >= di_units['t']:
-    possible_solutions.append('t')
-if earnings % pe == 0 and unit >= di_units['p']:
-    possible_solutions.append('p')
-if earnings % ce == 0 and unit >= di_units['c']:
-    possible_solutions.append('c')
-
-index = 1
-final_solutions = []
-for i in possible_solutions:
-    temp = unit
-    while temp >= di_units[i]:
-        di_solutions[i] += 1
-        temp -= di_units[i]
-    final_solutions.append("\t {}. T:{} P:{} C:{}".format(
-        index, di_solutions['t'], di_solutions['p'], di_solutions['c']))
-    di_solutions[i] = 0
+# Looking for all three categories of building
+maxEarning, index = 0, 0
+solutions = {}
+for i in ['T', 'P', 'C']:
+    solutions[i] = maxProfit(unit, index, i, [0, 0, 0])
+    maxEarning = max(maxEarning, solutions[i][1])
     index += 1
 
 # Displaying output
+index = 1
+print("Earnings: $", maxEarning, sep='')
 print("Solutions")
-for i in final_solutions:
-    print(i)
+for key, value in solutions.items():
+    if value[1] == maxEarning:
+        print("\t{0}. T:{1} P:{2} C:{3}".format(
+            index, value[0][0], value[0][1], value[0][2]))
+    index += 1
